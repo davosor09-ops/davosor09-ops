@@ -1,0 +1,414 @@
+<div id="dateDisplay" style="font-family: Arial, sans-serif; font-size: 28px; font-weight: bold; color: #444; margin-bottom: 10px;"></div>
+<div id="dailyText" style="font-family: Arial, sans-serif; font-size: 36px; font-weight: bold; color: #333; white-space: pre-line;"></div>
+
+<script>
+  // ==================
+  //  SCHEDULE STORAGE
+  // ==================
+  const schedules = {
+    A: [ // Regular
+      { name: "1st Period", start: "07:50 AM", end: "08:45 AM" },
+      { name: "2nd Period", start: "08:50 AM", end: "09:40 AM" },
+      { name: "3rd Period", start: "09:45 AM", end: "10:40 AM" },
+      { name: "4th Period", start: "10:45 AM", end: "12:45 PM" },
+      { name: "A Lunch", start: "10:50 AM", end: "11:25 AM" },
+      { name: "B Lunch", start: "11:30 AM", end: "12:05 PM" },
+      { name: "C Lunch", start: "12:10 PM", end: "12:45 PM" },
+      { name: "5th Period", start: "12:50 PM", end: "01:40 PM" },
+      { name: "6th Period", start: "01:45 PM", end: "02:35 PM" }
+    ],
+    B: [ // Panther time
+      { name: "1st Period", start: "07:50 AM", end: "08:35 AM" },
+      { name: "2nd Period", start: "08:40 AM", end: "09:25 AM" },
+      { name: "Panther Time", start: "09:25 AM", end: "09:55 AM" },
+      { name: "3rd Period", start: "10:00 AM", end: "10:50 AM" },
+      { name: "4th Period", start: "10:55 AM", end: "12:55 PM" },
+      { name: "A Lunch", start: "11:00 AM", end: "11:35 AM" },
+      { name: "B Lunch", start: "11:40 AM", end: "12:15 PM" },
+      { name: "C Lunch", start: "12:20 PM", end: "12:55 PM" },
+      { name: "5th Period", start: "01:00 PM", end: "01:45 PM" },
+      { name: "6th Period", start: "01:50 PM", end: "02:35 PM" }
+    ],
+    C: [ // 2-hour delay
+      { name: "1st Period", start: "09:50 AM", end: "10:20 AM" },
+      { name: "2nd Period", start: "10:25 AM", end: "10:55 AM" },
+      { name: "3rd Period", start: "11:00 AM", end: "11:30 AM" },
+      { name: "4th Period", start: "11:35 AM", end: "01:35 PM" },
+      { name: "A Lunch", start: "11:40 AM", end: "12:15 PM" },
+      { name: "B Lunch", start: "12:20 PM", end: "12:55 PM" },
+      { name: "C Lunch", start: "01:00 PM", end: "01:35 PM" },
+      { name: "5th Period", start: "01:40 PM", end: "02:05 PM" },
+      { name: "6th Period", start: "02:10 PM", end: "02:35 PM" }
+    ],
+    D: [ // Half Day #1
+      { name: "1st Period", start: "07:50 AM", end: "08:20 AM" },
+      { name: "2nd Period", start: "08:25 AM", end: "08:55 AM" },
+      { name: "3rd Period", start: "09:00 AM", end: "09:35 AM" },
+      { name: "4th Period", start: "09:40 AM", end: "10:10 AM" },
+      { name: "5th Period", start: "10:15 AM", end: "10:45 AM" },
+      { name: "6th Period", start: "10:50 AM", end: "11:35 AM" }
+    ],
+    E: [ // Half Day #2 [Not Updated]
+      { name: "1st Period", start: "07:50 AM", end: "08:20 AM" },
+      { name: "2nd Period", start: "08:25 AM", end: "08:55 AM" },
+      { name: "3rd Period", start: "09:00 AM", end: "09:30 AM" },
+      { name: "4th Period", start: "09:35 AM", end: "11:35 AM" },
+      { name: "A Lunch", start: "09:35 AM", end: "10:05 AM" },
+      { name: "B Lunch", start: "10:05 AM", end: "10:35 AM" },
+      { name: "C Lunch", start: "10:35 AM", end: "11:05 AM" },
+      { name: "D Lunch", start: "11:05 AM", end: "11:35 AM" }
+    ],
+    F: [ // Half Day #3 [Not Updated]
+      { name: "1st Period", start: "07:50 AM", end: "08:20 AM" },
+      { name: "5th Period", start: "08:25 AM", end: "08:55 AM" },
+      { name: "6th Period", start: "09:00 AM", end: "09:30 AM" },
+      { name: "4th Period", start: "09:35 AM", end: "11:35 AM" },
+      { name: "A Lunch", start: "09:35 AM", end: "10:05 AM" },
+      { name: "B Lunch", start: "10:05 AM", end: "10:35 AM" },
+      { name: "C Lunch", start: "10:35 AM", end: "11:05 AM" },
+      { name: "D Lunch", start: "11:05 AM", end: "11:35 AM" }
+    ],
+    G: "Schedule not yet discovered",
+    H: "No School",
+    I: "Online School if there will ever be online",
+    J: "Pep Rally",
+    K: [ // weird
+      { name: "1st Period", start: "07:50 AM", end: "08:45 AM" },
+      { name: "2nd Period", start: "08:50 AM", end: "09:40 AM" },
+      { name: "3rd Period", start: "09:45 AM", end: "10:55 AM" },
+      { name: "4th Period", start: "10:55 AM", end: "12:55 PM" },
+      { name: "A Lunch", start: "10:55 AM", end: "11:25 AM" },
+      { name: "B Lunch", start: "11:25 AM", end: "11:55 AM" },
+      { name: "C Lunch", start: "11:55 AM", end: "12:25 PM" },
+      { name: "D Lunch", start: "12:25 PM", end: "12:55 PM" },
+      { name: "5th Period", start: "01:00 PM", end: "01:45 PM" },
+      { name: "6th Period", start: "01:50 PM", end: "02:35 PM" }
+    ],
+    L: [ // Regular shortened
+      { name: "1st Period", start: "07:48 AM", end: "08:45 AM" },
+      { name: "2nd Period", start: "08:50 AM", end: "09:40 AM" },
+      { name: "3rd Period", start: "09:45 AM", end: "10:40 AM" },
+      { name: "4th Period", start: "10:45 AM", end: "12:45 PM" },
+      { name: "A Lunch", start: "10:45 AM", end: "11:15 AM" },
+      { name: "B Lunch", start: "11:15 AM", end: "11:45 AM" },
+      { name: "C Lunch", start: "11:45 AM", end: "12:15 PM" },
+      { name: "D Lunch", start: "12:15 PM", end: "12:45 PM" },
+      { name: "5th Period", start: "12:50 PM", end: "01:15 PM" },
+      { name: "6th Period", start: "01:20 PM", end: "01:50 PM" }
+    ],
+    M: "Schools & Offices Closed",
+    N: [
+      { name: "1ST EXAM", start: "07:48 AM", end: "09:30 AM" },
+      { name: "2nd Period", start: "09:35 AM", end: "10:20 AM" },
+      { name: "3rd Period", start: "10:25 AM", end: "11:10 AM" },
+      { name: "4th Period", start: "11:15 AM", end: "12:45 PM" },
+      { name: "A Lunch", start: "11:15 AM", end: "11:45 AM" },
+      { name: "B Lunch", start: "11:45 AM", end: "12:15 PM" },
+      { name: "C Lunch", start: "12:15 PM", end: "12:45 PM" },
+      { name: "5th Period", start: "12:50 PM", end: "01:40 PM" },
+      { name: "6th Period", start: "01:45 PM", end: "02:35 PM" }
+    ],
+    O: [
+      { name: "2ND EXAM", start: "07:48 AM", end: "09:30 AM" },
+      { name: "Break/Brunch", start: "09:30 AM", end: "9:50 AM" },
+      { name: "3RD EXAM", start: "9:55 AM", end: "11:35 AM" }
+    ],
+    P: [
+      { name: "4B EXAM", start: "07:48 AM", end: "09:30 AM" },
+      { name: "Break/Brunch", start: "09:30 AM", end: "9:50 AM" },
+      { name: "5TH EXAM", start: "9:55 AM", end: "11:35 AM" }
+    ],
+    Q: [
+      { name: "4A EXAM", start: "07:48 AM", end: "09:30 AM" },
+      { name: "Break/Brunch", start: "09:30 AM", end: "9:50 AM" },
+      { name: "6TH EXAM", start: "9:55 AM", end: "11:35 AM" },
+      { name: "RUN! FLEE THE COMPLEX", start: "11:35 AM", end: "12:00 PM" }
+    ],
+    R: "Please Reload Website",
+    S: "School Staff Return",
+    T: "First Day of School",
+    U: "",
+    V: "",
+    W: "",
+    X: "",
+    Y: "",
+    Z: "",
+  };
+
+  // ============================
+  //  YEARLY CALENDAR (EDIT THIS)
+  // ============================
+  // Format: "YYYY-MM-DD": { schedule: "A", type: "Regular", day: "A" }
+  const yearlyCalendar = {
+// Week 1
+    "2026-08-23": { schedule: "H", type: "No School", day: "none" },
+    "2026-08-24": { schedule: "A", type: "Regular", day: "A" },
+    "2026-08-25": { schedule: "A", type: "Regular", day: "B" },
+    "2026-08-26": { schedule: "B", type: "Panther", day: "A" },
+    "2026-08-27": { schedule: "A", type: "Regular", day: "B" },
+    "2026-08-28": { schedule: "A", type: "Regular", day: "A" },
+    "2026-08-29": { schedule: "H", type: "No School", day: "none" },
+// Week 2
+    "2026-08-30": { schedule: "H", type: "No School", day: "none" },
+    "2026-08-31": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-01": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-02": { schedule: "B", type: "Panther", day: "B" },
+    "2026-09-03": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-04": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-05": { schedule: "H", type: "No School", day: "none" },
+// Week 3
+    "2026-09-06": { schedule: "H", type: "No School", day: "none" },
+    "2026-09-07": { schedule: "H", type: "No School", day: "none" },
+    "2026-09-08": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-09": { schedule: "B", type: "Panther", day: "B" },
+    "2026-09-10": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-11": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-12": { schedule: "H", type: "No School", day: "none" },
+// Week 4
+    "2026-09-13": { schedule: "H", type: "No School", day: "none" },
+    "2026-09-14": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-15": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-16": { schedule: "B", type: "Panther", day: "A" },
+    "2026-09-17": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-18": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-19": { schedule: "H", type: "No School", day: "none" },
+// Week 5
+    "2026-09-20": { schedule: "H", type: "No School", day: "none" },
+    "2026-09-21": { schedule: "H", type: "No School", day: "Yom Kippur" },
+    "2026-09-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-23": { schedule: "B", type: "Panther", day: "A" },
+    "2026-09-24": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-25": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-26": { schedule: "H", type: "No School", day: "none" },
+// Week 6
+    "2026-09-27": { schedule: "H", type: "No School", day: "none" },
+    "2026-09-28": { schedule: "A", type: "Regular", day: "B" },
+    "2026-09-29": { schedule: "A", type: "Regular", day: "A" },
+    "2026-09-30": { schedule: "D", type: "Half", day: "B" },
+    "2026-10-01": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-02": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-03": { schedule: "H", type: "No School", day: "none" },
+// Week 7 (right hand emoji) (crazy face emoji) (left hand emoji)
+    "2026-10-04": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-05": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-06": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-07": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-08": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-09": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-10": { schedule: "H", type: "No School", day: "none" },
+// Week 8
+    "2026-10-11": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-12": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-13": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-14": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-15": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-16": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-17": { schedule: "H", type: "No School", day: "none" },
+// Week 9
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+    "2026-10-25": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-26": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-27": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-28": { schedule: "H", type: "No school", day: "none" },
+    "2026-10-29": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-30": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-31": { schedule: "H", type: "No School", day: "none" },
+// Week 11
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 12
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 13
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+    "2026-10-18": { schedule: "H", type: "No School", day: "none" },
+    "2026-10-19": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-20": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-21": { schedule: "B", type: "Panther", day: "A" },
+    "2026-10-22": { schedule: "A", type: "Regular", day: "B" },
+    "2026-10-23": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-24": { schedule: "H", type: "No School", day: "none" },
+// Week 10
+  };
+
+  // ============================
+  //  DATE DISPLAY
+  // ============================
+  function renderDate() {
+    const now = new Date();
+    const options = {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      weekday: "long"
+    };
+    const formatted = now.toLocaleDateString("en-US", options);
+
+    const info = getTodayInfo();
+    const type = info.type || "Unknown";
+    const letterDay = info.day || "?";
+
+    document.getElementById("dateDisplay").textContent =
+      `${formatted} — ${type} • ${letterDay}`;
+  }
+
+  // ============================
+  //  TIME PARSING HELPERS
+  // ============================
+  function parseTime(timeStr) {
+    const [time, modifier] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+  }
+
+  function isNowBetween(start, end) {
+    const now = new Date();
+    const startTime = parseTime(start);
+    const endTime = parseTime(end);
+    return now >= startTime && now <= endTime;
+  }
+
+  function getTimeLeft(end) {
+    const now = new Date();
+    const endTime = parseTime(end);
+    const diff = endTime - now;
+
+    if (diff <= 0) return "0m 0s";
+
+    const mins = Math.floor(diff / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+
+    return `${mins}m ${secs}s`;
+  }
+
+  // ============================
+  //  GET TODAY'S INFO
+  // ============================
+  function getTodayInfo() {
+    const now = new Date();
+    const key = now.toISOString().split("T")[0];
+
+    return yearlyCalendar[key] || {
+      schedule: "H",
+      type: "No School",
+      day: "A"
+    };
+  }
+
+  // ============================
+  //  RENDER SCHEDULE
+  // ============================
+  function renderSchedule() {
+    const info = getTodayInfo();
+    const chosenSchedule = info.schedule;
+    const schedule = schedules[chosenSchedule];
+    let output = "";
+
+    if (Array.isArray(schedule)) {
+      schedule.forEach(period => {
+        if (isNowBetween(period.start, period.end)) {
+          const timeLeft = getTimeLeft(period.end);
+          output += `<span style="color:red">${period.name}, ${period.start} - ${period.end} - ${timeLeft}</span>\n`;
+        } else {
+          output += `<span style="color:black">${period.name}, ${period.start} - ${period.end}</span>\n`;
+        }
+      });
+    } else {
+      output = schedule;
+    }
+
+    document.getElementById("dailyText").innerHTML = output;
+  }
+
+  // ============================
+  //  INITIAL + INTERVAL UPDATE
+  // ============================
+  renderDate();
+  renderSchedule();
+
+  setInterval(() => {
+    renderDate();
+    renderSchedule();
+  }, 1000);
+</script>
+
+<!-- DEV SECRET KEY REDIRECT -->
+<script>
+(function() {
+  const devKeys = { D: false, E: false, V: false };
+
+  document.addEventListener("keydown", function(event) {
+    const key = event.key.toUpperCase();
+    if (devKeys.hasOwnProperty(key)) {
+      devKeys[key] = true;
+    }
+
+    if (devKeys.D && devKeys.E && devKeys.V) {
+      // Open in a new tab
+      window.open("https://sites.google.com/inst.hcpss.org/guilfordp-park-bell-scbedule/developer-page", "_blank"); // <-- put your link here
+      // Optional: reset so it doesn't keep firing
+      devKeys.D = devKeys.E = devKeys.V = false;
+    }
+  });
+
+  document.addEventListener("keyup", function(event) {
+    const key = event.key.toUpperCase();
+    if (devKeys.hasOwnProperty(key)) {
+      devKeys[key] = false;
+    }
+  });
+})();
+</script>
