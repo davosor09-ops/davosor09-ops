@@ -85,7 +85,16 @@
     G: "Schedule not yet discovered",
     H: "No School",
     I: "Online School if there will ever be online",
-    J: "Pep Rally",
+    J: [ // Pep Rally
+      { name: "1st Period", start: "07:50 AM", end: "08:45 AM" },
+      { name: "2nd Period", start: "08:50 AM", end: "09:40 AM" },
+      { name: "3rd Period", start: "09:45 AM", end: "10:40 AM" },
+      { name: "4th Period", start: "10:45 AM", end: "12:45 PM" },
+      { name: "A Lunch", start: "10:50 AM", end: "11:25 AM" },
+      { name: "B Lunch", start: "11:30 AM", end: "12:05 PM" },
+      { name: "C Lunch", start: "12:10 PM", end: "12:45 PM" },
+      { name: "Pep Rally", start: "12:50 PM", end: "02:35 PM" },
+    ],
     K: [ // weird
       { name: "1st Period", start: "07:50 AM", end: "08:45 AM" },
       { name: "2nd Period", start: "08:50 AM", end: "09:40 AM" },
@@ -223,7 +232,7 @@
     "2026-10-12": { schedule: "A", type: "Regular", day: "B" },
     "2026-10-13": { schedule: "A", type: "Regular", day: "A" },
     "2026-10-14": { schedule: "R", type: "PSAT", day: "B" },
-    "2026-10-15": { schedule: "A", type: "Regular", day: "A" },
+    "2026-10-15": { schedule: "J", type: "Pep Rally", day: "A" },
     "2026-10-16": { schedule: "H", type: "No School", day: "none" },
     "2026-10-17": { schedule: "H", type: "No School", day: "none" },
 // Week 9
